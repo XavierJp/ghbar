@@ -37,12 +37,16 @@ cd ghbar
 ./install.sh
 ```
 
-This builds a release binary and copies it to `/usr/local/bin/ghbar`.
+This builds a release binary, copies it to `/usr/local/bin/ghbar`, and installs a Launch Agent so GHBar starts automatically on login.
 
-Then run:
+Manual controls:
 
 ```bash
-ghbar
+# Stop
+launchctl unload ~/Library/LaunchAgents/com.ghbar.app.plist
+
+# Restart
+launchctl unload ~/Library/LaunchAgents/com.ghbar.app.plist && launchctl load ~/Library/LaunchAgents/com.ghbar.app.plist
 ```
 
 ## Uninstall
