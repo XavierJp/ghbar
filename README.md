@@ -1,4 +1,4 @@
-# GHBar
+# GH-Bar
 
 A lightweight macOS menu bar app that shows your GitHub Actions and Pull Requests at a glance. Built with Swift and SwiftUI, powered by the `gh` CLI.
 
