@@ -1,44 +1,34 @@
 import AppKit
 import SwiftUI
-import Combine
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
   private var statusItem: NSStatusItem!
   private var popover: NSPopover!
   private let appState = AppState()
-  private var cancellables = Set<AnyCancellable>()
 
   func applicationDidFinishLaunching(_ notification: Notification) {
     statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    updateIcon(status: .unknown)
 
     popover = NSPopover()
     popover.contentSize = NSSize(width: 420, height: 520)
     popover.behavior = .transient
+    popover.delegate = self
     popover.contentViewController = NSHostingController(
       rootView: ContentView(appState: appState)
     )
 
     if let button = statusItem.button {
+      button.image = makePRIcon()
       button.action = #selector(togglePopover)
       button.target = self
     }
-
-    appState.$overallStatus
-      .receive(on: RunLoop.main)
-      .sink { [weak self] status in
-        self?.updateIcon(status: status)
-      }
-      .store(in: &cancellables)
-
   }
 
   @objc private func togglePopover() {
     guard let button = statusItem.button else { return }
     if popover.isShown {
       popover.performClose(nil)
-      appState.popoverClosed()
     } else {
       popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
       NSApp.activate(ignoringOtherApps: true)
@@ -46,9 +36,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
   }
 
-  private func updateIcon(status: RunStatus) {
-    guard let button = statusItem.button else { return }
-    button.image = makePRIcon()
+  // NSPopoverDelegate — handles both manual close and click-away dismiss
+  nonisolated func popoverDidClose(_ notification: Notification) {
+    Task { @MainActor in
+      appState.popoverClosed()
+    }
   }
 
   /// Draws the Lucide `git-pull-request-arrow` icon as an 18x18 NSImage, label color.

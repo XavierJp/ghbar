@@ -101,14 +101,15 @@ enum GitHubService {
         return
       }
 
-      process.waitUntilExit()
+      // Read stdout/stderr BEFORE waitUntilExit to avoid pipe buffer deadlock
       let data = stdout.fileHandleForReading.readDataToEndOfFile()
+      let errData = stderr.fileHandleForReading.readDataToEndOfFile()
+      process.waitUntilExit()
       let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
       if process.terminationStatus == 0 {
         continuation.resume(returning: output)
       } else {
-        let errData = stderr.fileHandleForReading.readDataToEndOfFile()
         let errStr = String(data: errData, encoding: .utf8) ?? "unknown error"
         continuation.resume(throwing: NSError(domain: "gh", code: Int(process.terminationStatus),
                                               userInfo: [NSLocalizedDescriptionKey: errStr]))

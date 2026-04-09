@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - gh CLI JSON models
 
@@ -10,10 +11,6 @@ struct GHRun: Codable {
   let startedAt: Date
   let updatedAt: Date
   let url: String
-}
-
-struct GHRepo: Codable {
-  let nameWithOwner: String
 }
 
 struct GHPullRequest: Codable {
@@ -85,10 +82,14 @@ enum RunStatus {
     }
   }
 
-  var hasNotification: Bool {
+  var color: Color {
     switch self {
-    case .failure, .inProgress: return true
-    default: return false
+    case .success:    return .green
+    case .failure:    return .red
+    case .inProgress: return .orange
+    case .queued:     return .gray
+    case .cancelled:  return .gray
+    case .unknown:    return .gray
     }
   }
 }
@@ -126,6 +127,15 @@ enum ReviewStatus {
     case .changesRequested: return "exclamationmark.triangle.fill"
     case .reviewRequired:   return "eye.circle"
     case .none:             return "circle"
+    }
+  }
+
+  var color: Color {
+    switch self {
+    case .approved:         return .green
+    case .changesRequested: return .orange
+    case .reviewRequired:   return .blue
+    case .none:             return .gray
     }
   }
 }

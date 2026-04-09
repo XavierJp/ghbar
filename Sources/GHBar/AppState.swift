@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import Combine
 
 @MainActor
 final class AppState: ObservableObject {
@@ -8,7 +7,6 @@ final class AppState: ObservableObject {
   @Published var selectedSource: OrgSource
   @Published var repoGroups: [RepoGroup] = []
   @Published var pullRequests: [String: [PRViewModel]] = [:]
-  @Published var overallStatus: RunStatus = .unknown
   @Published var isLoading = false
   @Published var lastRefresh: Date?
   @Published var selectedTab: Tab = .actions
@@ -133,20 +131,5 @@ final class AppState: ObservableObject {
       }
     }
     self.pullRequests = prsByRepo
-
-    // Overall icon status
-    let allRuns = runs.values.flatMap { $0 }
-    if allRuns.isEmpty {
-      overallStatus = .unknown
-    } else {
-      let statuses = allRuns.map { parseRunStatus(status: $0.status, conclusion: $0.conclusion) }
-      if statuses.contains(where: { $0 == .failure }) {
-        overallStatus = .failure
-      } else if statuses.contains(where: { $0 == .inProgress || $0 == .queued }) {
-        overallStatus = .inProgress
-      } else {
-        overallStatus = .success
-      }
-    }
   }
 }

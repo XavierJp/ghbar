@@ -64,9 +64,9 @@ struct PRsView: View {
           Spacer()
 
           HStack(spacing: 3) {
-            Image(systemName: checksSymbol(pr.checksStatus))
+            Image(systemName: pr.checksStatus.symbol)
               .font(.system(size: 11))
-              .foregroundColor(checksColor(pr.checksStatus))
+              .foregroundColor(pr.checksStatus.color)
             Text("CI")
               .font(.system(size: 11))
               .foregroundStyle(.secondary)
@@ -75,7 +75,7 @@ struct PRsView: View {
           HStack(spacing: 3) {
             Image(systemName: pr.reviewStatus.symbol)
               .font(.system(size: 11))
-              .foregroundColor(reviewColor(pr.reviewStatus))
+              .foregroundColor(pr.reviewStatus.color)
             Text(pr.reviewStatus.label)
               .font(.system(size: 11))
               .foregroundStyle(.secondary)
@@ -93,28 +93,6 @@ struct PRsView: View {
       } else {
         NSCursor.pop()
       }
-    }
-  }
-
-  private func checksSymbol(_ status: RunStatus) -> String {
-    status.symbol
-  }
-
-  private func checksColor(_ status: RunStatus) -> Color {
-    switch status {
-    case .success:    return .green
-    case .failure:    return .red
-    case .inProgress: return .orange
-    default:          return .gray
-    }
-  }
-
-  private func reviewColor(_ status: ReviewStatus) -> Color {
-    switch status {
-    case .approved:         return .green
-    case .changesRequested: return .orange
-    case .reviewRequired:   return .blue
-    case .none:             return .gray
     }
   }
 

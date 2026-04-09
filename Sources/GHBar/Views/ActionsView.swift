@@ -75,7 +75,7 @@ private struct RepoDisclosure: View {
     let worst = worstStatus(allStatuses)
     return Image(systemName: worst.symbol)
       .font(.system(size: 12))
-      .foregroundColor(statusColor(worst))
+      .foregroundColor(worst.color)
   }
 
   private func workflowSection(workflow: WorkflowGroup) -> some View {
@@ -129,7 +129,7 @@ private struct RepoDisclosure: View {
       HStack(spacing: 6) {
         Image(systemName: run.status.symbol)
           .font(.system(size: 11))
-          .foregroundColor(statusColor(run.status))
+          .foregroundColor(run.status.color)
         Text(run.branch)
           .font(.system(size: 11, design: .monospaced))
           .lineLimit(1)
@@ -148,17 +148,6 @@ private struct RepoDisclosure: View {
     .buttonStyle(.plain)
     .onHover { hovering in
       if hovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
-    }
-  }
-
-  private func statusColor(_ status: RunStatus) -> Color {
-    switch status {
-    case .success:    return .green
-    case .failure:    return .red
-    case .inProgress: return .orange
-    case .queued:     return .gray
-    case .cancelled:  return .gray
-    case .unknown:    return .gray
     }
   }
 
